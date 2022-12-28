@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container, Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
 
@@ -6,8 +6,18 @@ import NftCard from "../Nft-card/NftCard";
 import { NFT__DATA } from "../../../assets/data/data.js";
 
 import "./live-auction.css";
+import NFTContext from "../../../context/NFTContext";
 
 const LiveAuction = () => {
+  const { fetchNFTs, connectingWithSmartContract } = useContext(NFTContext)
+  const [data, setData] = useState(NFT__DATA)
+  const handleFetchNFT = async () => {
+    const data = await fetchNFTs()
+    setData(data)
+  }
+  useEffect(()=> {
+    handleFetchNFT()
+  },[])
   return (
     <section>
       <Container>
@@ -21,7 +31,7 @@ const LiveAuction = () => {
             </div>
           </Col>
 
-          {NFT__DATA?.slice(0, 4).map((item, index) => (
+          {data?.slice(0, 4).map((item, index) => (
             <Col lg="3" md="4" sm="6" className="mb-4" key={index}>
               <NftCard item={item} />
             </Col>

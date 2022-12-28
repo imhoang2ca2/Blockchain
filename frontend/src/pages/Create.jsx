@@ -12,6 +12,7 @@ import { useRef } from "react";
 import { uploadFileToIPFS, uploadJsonToIPFS } from "../pinata/pinata";
 import { ethers } from "ethers";
 import ModalPending from "../components/ui/ModalPending/ModalPending";
+import { useNavigate } from "react-router-dom";
 
 const item = {
   tokenId: "01",
@@ -27,7 +28,7 @@ const item = {
 
 
 const Create = () => {
-
+  const navigate = useNavigate()
   const { connectingWithSmartContract } = useContext(NFTContext)
   const [imgUrl, setImgUrl] = useState()
   const descriptionRef = useRef()
@@ -116,6 +117,11 @@ const Create = () => {
 
   }
 
+  const closeAndNavigate = () => {
+    setShowModal(false)
+    navigate("/market")
+  }
+
   const handleCreateNFT = async () => {
     const title = titleRef.current.value
     const price = priceRef.current.value
@@ -126,7 +132,7 @@ const Create = () => {
 
   return (
     <>
-      {showModal && <ModalPending create={creating} close={setShowModal} />}
+      {showModal && <ModalPending create={creating} close={closeAndNavigate} />}
       <CommonSection title="Create Item" />
 
       <section>

@@ -66,7 +66,7 @@ const Header = () => {
               <span>
                 <i className="ri-fire-fill"></i>
               </span>
-              NFTs
+              VKU
             </h2>
           </div>
 
@@ -93,7 +93,7 @@ const Header = () => {
               : (currentAccount && isConnected ?
                 <div className="d-flex">
                   <div className="account d-flex align-items-center" style={{ gridColumnGap: "1rem", columnGap: "1rem", cursor: 'pointer' }} onClick={() => setShowModal((prev) => !prev)}>
-                    <Identicon width={30} address={currentAccount}/>  {`${currentAccount.slice(0, 7)}...${currentAccount.slice(35)}`}
+                    <Identicon width={30} address={currentAccount} />  {`${currentAccount.slice(0, 7)}...${currentAccount.slice(35)}`}
                     <RiArrowDropDownLine style={{ fontSize: 30 }} className={`${showModal ? "rotate" : "non-rotate"}`} />
                   </div>
 

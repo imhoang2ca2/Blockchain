@@ -14,7 +14,7 @@ const NftCard = (props) => {
   const { title, tokenId, price, image, owner, seller, load } = props.item;
   const { connectingWithSmartContract, } = useContext(NFTContext)
   const [showModal, setShowModal] = useState(false);
-  const { sale } = props
+  const { sale,click } = props
   const [loaded, setLoaded] = useState(load ? load : false)
   const [sell, setSell] = useState(0)
 
@@ -64,7 +64,7 @@ const NftCard = (props) => {
 
   return (
     <div className="single__nft__card">
-      {showModal && <ModalPending create={sell} close={setShowModal} />}
+      
       <div className="nft__img">
         {!loaded && <Skeleton sx={{ bgcolor: '#ffffffaf' }} variant="rounded" style={{ width: '100%', height: 221 }} />}
         <img src={image} alt="" className="w-100" onLoad={() => setLoaded(true)} style={!loaded ? { display: "none" } : {}} />
@@ -97,7 +97,7 @@ const NftCard = (props) => {
         <div className=" mt-3 d-flex align-items-center justify-content-between">
           <button
             className="bid__btn d-flex align-items-center gap-1"
-            onClick={!sale ? handleBuyNFT : handleSellNFT}
+            onClick={()=>click(props.item)}
           >
             <i className="ri-shopping-bag-line"></i> {sale ? "Sell" : "Place Bid"}
           </button>

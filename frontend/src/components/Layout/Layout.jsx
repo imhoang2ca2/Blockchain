@@ -8,11 +8,11 @@ import Modal from "../ui/ModalChangeNetWork/ModalChangeNetwork";
 import ModalPending from "../ui/ModalPending/ModalPending";
 
 const Layout = () => {
-  const { networkError } = useContext(NFTContext);
+  const { networkError, isConnected } = useContext(NFTContext);
 
   return (
     <div>
-      {networkError && <Modal />}
+      {(networkError || !isConnected) && <Modal />}
       <Header />
       <div>
         <Routers />

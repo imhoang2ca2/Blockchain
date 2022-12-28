@@ -12,10 +12,22 @@ import "../styles/market.css";
 import NFTContext from "../context/NFTContext";
 import axios from "axios";
 import { pinataApi } from "../pinata/pinataApi";
+import { ethers } from "ethers";
+import ModalPending from "../components/ui/ModalPending/ModalPending";
+import noNFT from "../assets/images/nfts.svg"
+import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa"
+import { useRef } from "react";
 
 const Market = () => {
-  const { fetchNFTs } = useContext(NFTContext)
+  const { fetchNFTs, connectingWithSmartContract } = useContext(NFTContext)
+  const [showModal, setShowModal] = useState(false)
+  const [message, setMessage] = useState(0)
+  const [nfts, setNfts] = useState([])
   const [data, setData] = useState(NFT__DATA);
+  const nameRef = useRef()
+
+  const navigate = useNavigate()
 
   const handleCategory = () => { };
 
@@ -49,41 +61,45 @@ const Market = () => {
   };
 
 
-  const hmmm = async () => {
-    try {
-      var config = {
-        method: 'get',
-        url: 'https://api.pinata.cloud/data/testAuthentication',
-        headers: {
-          'Authorization': `Bearer ${pinataApi.AccessToken}`
-        }
-      };
-      const res = await axios.get("https://api.pinata.cloud/pinning/pinJobs?status=retrieving&sort=ASC", {
-        headers: {
-          'Authorization': `Bearer ${pinataApi.AccessToken}`
-        }
-      })
-      console.log(res.data)
 
+  const handleBuyNFT = async (nft) => {
+    const { tokenId, price } = nft
+    const contract = await connectingWithSmartContract()
+    try {
+      setShowModal(true)
+      const transaction = await contract.createMarketSale(tokenId, { value: ethers.utils.parseUnits(price, "ether") })
+      await transaction.wait()
+      setMessage(1)
+      handleFetchNFT()
     } catch (error) {
       console.log(error);
-
+      setMessage(2)
     }
   }
-
 
   const handleFetchNFT = async () => {
     const data = await fetchNFTs()
     setData(data)
+    setNfts(data)
   }
+
+
 
   useEffect(() => {
     handleFetchNFT()
-    hmmm()
+
   }, [])
+
+  const handleChangeSearch = async (e) => {
+    const value = e.target.value.toLowerCase()
+    const nfts = data.filter((nft, index) => nft.title.toLowerCase().includes(value))
+    setNfts(nfts);
+  }
+
 
   return (
     <>
+      {showModal && <ModalPending create={message} close={setShowModal} />}
       <CommonSection title={"MarketPlace"} />
 
       <section>
@@ -91,7 +107,7 @@ const Market = () => {
           <Row>
             <Col lg="12" className="mb-5">
               <div className="market__product__filter d-flex align-items-center justify-content-between">
-                <div className="filter__left d-flex align-items-center gap-5">
+                {/* <div className="filter__left d-flex align-items-center gap-5">
                   <div className="all__category__filter">
                     <select onChange={handleCategory}>
                       <option>All Categories</option>
@@ -119,15 +135,30 @@ const Market = () => {
                     <option value="mid">Mid Rate</option>
                     <option value="low">Low Rate</option>
                   </select>
+                </div> */}
+                <div className="form__input" style={{ width: "40%", position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder="Type name on NFTs"
+
+                    onChange={handleChangeSearch}
+                  />
+                  <FaSearch style={{ color: 'white', position: 'absolute', top: "25%", right: "5%" }} />
                 </div>
               </div>
             </Col>
 
-            {data?.map((item) => (
+            {nfts.length > 0 ? nfts?.map((item) => (
               <Col lg="3" md="4" sm="6" className="mb-4" key={item.id}>
-                <NftCard item={item} />
+                <NftCard item={item} click={handleBuyNFT} />
               </Col>
-            ))}
+            )) : (<div className="no-nfts">
+              <img src={noNFT} alt="" />
+              <h2>No NFTs</h2>
+              <button className="bid__btn d-flex align-items-center gap-1 create" type="button" onClick={() => navigate("/create")}>
+                Create your NFT
+              </button>
+            </div>)}
           </Row>
         </Container>
       </section>
