@@ -156,6 +156,8 @@ contract NFT is ERC721URIStorage {
             "Only item owner can perform this operation"
         );
         require(msg.value == listingPrice, "Price must equal to list price");
+        _itemSold.decrement();
+        _transfer(msg.sender, address(this), tokenId);
         idMarketItem[tokenId].sold = false;
         idMarketItem[tokenId].seller = payable(msg.sender);
         idMarketItem[tokenId].owner = payable(address(this));
@@ -166,14 +168,24 @@ contract NFT is ERC721URIStorage {
 
     function createMarketSale(uint256 tokenId) public payable {
         uint256 price = idMarketItem[tokenId].price;
+        console.log(price);
+        console.log(msg.value);
+
         require(
             msg.value == price,
             "Please submit the asking price in the order to complete the purchase"
         );
+        // console.log(price);
+        // console.log(msg.value);
+        // console.log(msg.value >= price);
+        require(
+            msg.sender != idMarketItem[tokenId].seller,
+            "Sellers can't buy their own nft"
+        );
 
         idMarketItem[tokenId].owner = payable(msg.sender);
         idMarketItem[tokenId].sold = true;
-        idMarketItem[tokenId].owner = payable(address(0));
+        // idMarketItem[tokenId].owner = payable(address(0));
 
         _itemSold.increment();
 
@@ -201,7 +213,6 @@ contract NFT is ERC721URIStorage {
         return items;
     }
 
-    
     function fetchMyNFT() public view returns (MarketItem[] memory) {
         uint256 totalCount = _tokenIds.current();
         uint256 itemCount = 0;

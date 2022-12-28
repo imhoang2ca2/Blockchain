@@ -64,12 +64,14 @@ export const NFTProvider = ({ children }) => {
   };
 
   const connectWallet = async () => {
+    console.log("Yolooooo");
     setIsLoading(true);
     if (!window.ethereum) return console.log("Please insall Metamask");
     try {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
+
       if (accounts.length > 0) {
         setCurrentAccount(accounts[0]);
         localStorage.setItem("isConnect", JSON.stringify({ isConnect: true }));
@@ -295,6 +297,7 @@ export const NFTProvider = ({ children }) => {
         disconnectWallet,
       }}
     >
+      {/* <ToastContainer /> */}
       {children}
     </NFTContext.Provider>
   );

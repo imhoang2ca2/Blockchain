@@ -1,15 +1,20 @@
 import { ethers } from 'ethers'
 import React, { useContext, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Col, Container, Row } from 'reactstrap'
 import CommonSection from '../components/ui/Common-section/CommonSection'
+import ModalPending from '../components/ui/ModalPending/ModalPending'
 import NftCard from '../components/ui/Nft-card/NftCard'
 import NFTContext from '../context/NFTContext'
+import noNFT from "../assets/images/nfts.svg"
 
 const Profile = () => {
 
   const { connectingWithSmartContract } = useContext(NFTContext)
   const [data, setData] = useState([])
+  const [showModal, setShowModal] = useState(false)
+  const [message, setMessage] = useState(0)
+  const navigate = useNavigate()
   const handleGetNFTBuyed = async () => {
     const contract = await connectingWithSmartContract();
     const data = await contract.fetchMyNFT()
@@ -58,6 +63,25 @@ const Profile = () => {
     console.log(NFTBuyed);
   }
 
+  const handleSellNFT = async (nft) => {
+    const { price, tokenId } = nft
+    try {
+      setShowModal(true)
+      const contract = await connectingWithSmartContract()
+      const listing = await contract.getListingPrice();
+      const priceEther = ethers.utils.parseUnits(price, "ether")
+      const listingPrice = listing.toString();
+      const transaction = await contract.reSellToken(tokenId, priceEther, { value: listingPrice })
+      await transaction.wait()
+      setMessage(1)
+      handleGetNFTBuyed()
+    } catch (error) {
+      console.log(error);
+      setMessage(2)
+    }
+
+  }
+
   useEffect(() => {
     handleGetNFTBuyed()
     handleGetNFTCreate()
@@ -65,6 +89,7 @@ const Profile = () => {
 
   return (
     <>
+      {showModal && <ModalPending create={message} close={setShowModal} />}
       <CommonSection title={"My NFT"} />
       <section>
         <Container>
@@ -77,11 +102,17 @@ const Profile = () => {
                 </span>
               </div>
             </Col>
-            {data.map((item) => (
+            {data.length > 0 ? data.map((item) => (
               <Col lg="3" md="4" sm="6" className="mb-4" key={item.id}>
-                <NftCard item={item} sale={true}/>
+                <NftCard item={item} sale={true} click={handleSellNFT} />
               </Col>
-            ))}
+            )) : (<div className="no-nfts">
+              <img src={noNFT} alt="" />
+              <h2>No NFTs</h2>
+              <button className="bid__btn d-flex align-items-center gap-1 create" type="button" onClick={() => navigate("/market")}>
+                Buy NFTs
+              </button>
+            </div>)}
             {/* <Col lg="12" className="mb-5">
               <div className="live__auction__top d-flex align-items-center justify-content-between ">
                 <h3>NFTs create</h3>
