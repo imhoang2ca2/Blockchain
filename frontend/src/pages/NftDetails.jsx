@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 import CommonSection from "../components/ui/Common-section/CommonSection";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 import { NFT__DATA } from "../assets/data/data";
 
@@ -23,8 +23,8 @@ const NftDetails = () => {
   const [showModal, setShowModal] = useState(false)
   const [sell, setSell] = useState(0)
   const { id } = useParams();
-
-  const { connectingWithSmartContract } = useContext(NFTContext)
+  const navigate = useNavigate()
+  const { connectingWithSmartContract,balanceOf } = useContext(NFTContext)
 
   const handleGetNFTDetail = async () => {
     const contract = await connectingWithSmartContract()
@@ -58,6 +58,7 @@ const NftDetails = () => {
       setShowModal(true)
       const transaction = await contract.createMarketSale(nft.tokenId, { value: ethers.utils.parseUnits(nft.price, "ether") })
       await transaction.wait()
+      balanceOf()
       setSell(1)
     } catch (error) {
       console.log(error);

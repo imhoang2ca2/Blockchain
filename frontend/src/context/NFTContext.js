@@ -288,7 +288,7 @@ export const NFTProvider = ({ children }) => {
         createNFT,
         fetchNFTs,
         fetchMyNFTOrListedNFTs,
-        // buyNFT,
+        balanceOf,
         connectingWithSmartContract,
         networkError,
         balance,
