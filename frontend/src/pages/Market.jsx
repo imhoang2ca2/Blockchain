@@ -20,7 +20,7 @@ import { FaSearch } from "react-icons/fa"
 import { useRef } from "react";
 
 const Market = () => {
-  const { fetchNFTs, connectingWithSmartContract } = useContext(NFTContext)
+  const { fetchNFTs, connectingWithSmartContract, balanceOf } = useContext(NFTContext)
   const [showModal, setShowModal] = useState(false)
   const [message, setMessage] = useState(0)
   const [nfts, setNfts] = useState([])
@@ -69,6 +69,7 @@ const Market = () => {
       setShowModal(true)
       const transaction = await contract.createMarketSale(tokenId, { value: ethers.utils.parseUnits(price, "ether") })
       await transaction.wait()
+      balanceOf()
       setMessage(1)
       handleFetchNFT()
     } catch (error) {
@@ -155,9 +156,7 @@ const Market = () => {
             )) : (<div className="no-nfts">
               <img src={noNFT} alt="" />
               <h2>No NFTs</h2>
-              <button className="bid__btn d-flex align-items-center gap-1 create" type="button" onClick={() => navigate("/create")}>
-                Create your NFT
-              </button>
+
             </div>)}
           </Row>
         </Container>
