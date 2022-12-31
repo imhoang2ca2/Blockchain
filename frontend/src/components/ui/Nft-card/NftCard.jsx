@@ -12,11 +12,12 @@ import ModalPending from "../ModalPending/ModalPending";
 import { ethers } from "ethers";
 const NftCard = (props) => {
   const { title, tokenId, price, image, owner, seller, load } = props.item;
-  const { connectingWithSmartContract } = useContext(NFTContext)
+  const { connectingWithSmartContract, currentAccount } = useContext(NFTContext)
   const [showModal, setShowModal] = useState(false);
   const { sale, click } = props
   const [loaded, setLoaded] = useState(load ? load : false)
   const [sell, setSell] = useState(0)
+  const myNFT = currentAccount === seller?.toLowerCase();
 
   // const amount = ethers.utils.parseUnits(price, "ether")
 
@@ -97,14 +98,15 @@ const NftCard = (props) => {
 
         <div className=" mt-3 d-flex align-items-center justify-content-between">
           <button
-            className="bid__btn d-flex align-items-center gap-1"
-
-            onClick={() => click(props.item)}
+            className={`bid__btn d-flex align-items-center gap-1 ${myNFT && "my-nft"}`}
+            onClick={() => {
+              if (!myNFT) {
+                click(props.item)
+              }
+            }}
           >
-            <i className="ri-shopping-bag-line"></i> {sale ? "Sell" : "Place Bid"}
+            <i className="ri-shopping-bag-line"></i> {myNFT ? "Your NFT" : (sale ? "Sell" : "Place Bid")}
           </button>
-
-          {/* {showModal && <Modal setShowModal={setShowModal} />} */}
 
           <span className="history__link">
             <Link to="#">View History</Link>

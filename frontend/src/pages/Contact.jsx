@@ -23,6 +23,10 @@ const Contact = () => {
     const message = messageRef.current.value
     if (name === "" || email === "" || subject === "" || message === "") return notifyErr()
     notify()
+    nameRef.current.value = ""
+    emailRef.current.value = ""
+    subjectRef.current.value = ""
+    messageRef.current.value = ""
   };
 
 
