@@ -19,3 +19,8 @@
     font-size: 0.6rem !important;
   }
 }
+.my-nft {
+  background-color: #5142fc4a !important;
+  border: none !important;
+  cursor: unset !important;
+}
