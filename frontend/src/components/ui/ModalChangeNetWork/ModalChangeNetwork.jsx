@@ -5,7 +5,8 @@ import "../Modal/modal.css";
 import nftCard from "../../../assets/images/nfts.svg"
 
 const Modal = () => {
-    const { networkError, isConnected, connectWallet } = useContext(NFTContext);
+    const { networkError, isConnected, connectWallet, metaMask } = useContext(NFTContext);
+    console.log(metaMask);
     const handleChangeNetWork = async () => {
         try {
             await window.ethereum.request({
@@ -22,18 +23,17 @@ const Modal = () => {
 
         }
     }
-
+    const title = !metaMask ? "Please install metaMask first" : (!isConnected ? "Please connect to metamask" : "Website only support on goerli network")
 
     return (
         <div className="modal__wrapper">
             <div className="single__modal" style={{ height: "22%" }}>
                 <span className="close__modal">
-                    {/* <i className="ri-close-line" onClick={() => setShowModal(false)}></i> */}
-                    {/* <img src={nftCard} alt="" /> */}
+
                 </span>
                 <img src="" alt="" />
-                <h6 className="text-center text-light">{!isConnected ? "Please connect to metamask" : "Website only support on goerli network"} </h6>
-                <button className="place__bid-btn" onClick={!isConnected ? connectWallet : handleChangeNetWork}>{!isConnected ? "Connect Wallet" : "Switch network"}  </button>
+                <h6 className="text-center text-light">{title} </h6>
+                {metaMask && (<button className="place__bid-btn" onClick={!isConnected ? connectWallet : handleChangeNetWork}>{!isConnected ? "Connect Wallet" : "Switch network"}  </button>)}
             </div>
         </div>
     );
