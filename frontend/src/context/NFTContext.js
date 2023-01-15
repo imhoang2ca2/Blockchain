@@ -36,53 +36,64 @@ export const NFTProvider = ({ children }) => {
   const [networkError, setNetworkError] = useState(false);
   const [balance, setBalance] = useState();
   const [isConnected, setIsConnected] = useState(false);
+  const [metaMask, setMetaMask] = useState(true);
   const checkIsConnected = async () => {
     setIsLoading(true);
-    if (!window.ethereum) return console.log("Please insall Metamask");
-    const networkVersion = window.ethereum.networkVersion;
-    const currentNetWork = networkVersion?.toString();
-
-    if (currentNetWork !== "5") {
-      setNetworkError(true);
+    if (!window.ethereum) {
+      setMetaMask(false);
+      console.log("fucl");
     } else {
-      setNetworkError(false);
-    }
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_accounts",
-      });
-      if (accounts.length > 0) {
-        setCurrentAccount(accounts[0]);
+      console.log("object");
+      const networkVersion = window.ethereum.networkVersion;
+      const currentNetWork = networkVersion?.toString();
+
+      if (currentNetWork !== "5") {
+        setNetworkError(true);
       } else {
-        setCurrentAccount();
-        localStorage.removeItem("isConnect");
+        setNetworkError(false);
       }
-    } catch (error) {
-      console.log(error);
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_accounts",
+        });
+        if (accounts.length > 0) {
+          setCurrentAccount(accounts[0]);
+        } else {
+          setCurrentAccount();
+          localStorage.removeItem("isConnect");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const connectWallet = async () => {
-    console.log("Yolooooo");
     setIsLoading(true);
-    if (!window.ethereum) return console.log("Please insall Metamask");
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
+    if (!window.ethereum) {
+      setMetaMask(false);
+    } else {
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
 
-      if (accounts.length > 0) {
-        setCurrentAccount(accounts[0]);
-        localStorage.setItem("isConnect", JSON.stringify({ isConnect: true }));
-        setIsConnected(true);
-      } else {
-        console.log("No account found");
+        if (accounts.length > 0) {
+          setCurrentAccount(accounts[0]);
+          localStorage.setItem(
+            "isConnect",
+            JSON.stringify({ isConnect: true })
+          );
+          setIsConnected(true);
+        } else {
+          console.log("No account found");
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const disconnectWallet = async () => {
@@ -99,22 +110,24 @@ export const NFTProvider = ({ children }) => {
     }
   };
 
-  window.ethereum.on("accountsChanged", function (accounts) {
-    setIsLoading(true);
-    setCurrentAccount(accounts[0]);
-    setIsLoading(false);
-  });
+  if (window.ethereum) {
+    window.ethereum.on("accountsChanged", function (accounts) {
+      setIsLoading(true);
+      setCurrentAccount(accounts[0]);
+      setIsLoading(false);
+    });
 
-  window.ethereum.on("chainChanged", (networkId) => {
-    if (networkId === "0x5") {
-      console.log(networkId);
-      setNetworkError(false);
-    } else {
-      setNetworkError(true);
-      console.log(typeof networkId);
-      console.log("Wtf?");
-    }
-  });
+    window.ethereum.on("chainChanged", (networkId) => {
+      if (networkId === "0x5") {
+        console.log(networkId);
+        setNetworkError(false);
+      } else {
+        setNetworkError(true);
+        console.log(typeof networkId);
+        console.log("Wtf?");
+      }
+    });
+  }
 
   // const uploadToIFPS = async (file) => {
   //   try {
@@ -284,7 +297,7 @@ export const NFTProvider = ({ children }) => {
         currentAccount,
         setCurrentAccount,
         isLoading,
-        // uploadToIFPS,
+        metaMask,
         createNFT,
         fetchNFTs,
         fetchMyNFTOrListedNFTs,
