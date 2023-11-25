@@ -29,8 +29,6 @@ const NAV__LINKS = [
   },
 ];
 
-
-
 const Header = () => {
   const headerRef = useRef(null);
   const menuRef = useRef(null);
@@ -66,7 +64,7 @@ const Header = () => {
               <span>
                 <i className="ri-fire-fill"></i>
               </span>
-              VKU
+              NFT
             </h2>
           </div>
 
